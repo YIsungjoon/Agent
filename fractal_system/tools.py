@@ -11,6 +11,8 @@ sys.path.append(str(Path("/home/leehm/linux_project/Agent_tools").resolve()))
 from document_parser import parse_document
 from data_orchestrator import preprocess_and_clean_data, rdb_store_and_query, gdb_store_and_query
 from legal_search import legal_search
+from construction_standards import kcsc_search
+
 
 # Path to the reference configuration
 REF_DIR = Path("/home/leehm/linux_project/Agent/ref")
@@ -130,7 +132,9 @@ def dispatch_tool(name: str, args: Dict[str, Any]) -> str:
     name_clean = name.strip().lower()
     args_dict = args if isinstance(args, dict) else {}
     try:
-        if "legal" in name_clean or "law" in name_clean:
+        if "kcsc" in name_clean or "kds" in name_clean or "kcs" in name_clean or "construction" in name_clean:
+            return kcsc_search.invoke(args_dict)
+        elif "legal" in name_clean or "law" in name_clean:
             return legal_search.invoke(args_dict)
         elif "search" in name_clean or "web" in name_clean:
             query = args_dict.get("query", args_dict.get("q", ""))
