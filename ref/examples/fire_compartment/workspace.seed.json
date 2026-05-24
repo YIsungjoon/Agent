@@ -1,0 +1,128 @@
+{
+  "run_id": "example-fire-compartment",
+  "created_at": "2026-05-17T00:00:00Z",
+  "question": "방화구획의 면적기준은 얼마마다 해줘야 하는지",
+  "max_depth": 2,
+  "status": "draft",
+  "answer_draft": "현행 법령 원문과 적용 조건 확인 전에는 단일 숫자로 확정하지 않습니다.",
+  "nodes": [
+    {
+      "id": "I0",
+      "parent_id": "",
+      "depth": 0,
+      "owner_agent": "mayor",
+      "status": "draft",
+      "irac": {
+        "issue": "방화구획 면적 기준 질문을 어떤 조건과 source로 판단해야 하는가?",
+        "rule": "법령 질문은 현행 원문, 조문, 시행일, 적용 조건을 확인해야 합니다.",
+        "application": "사용자 질문에는 용도, 층, 지하 여부, 소방 설비 조건이 없습니다.",
+        "conclusion": "하위 node에서 source와 조건을 분리합니다."
+      },
+      "confidence": 0.55,
+      "evidence": [],
+      "unknowns": ["현행 조문", "건축물 조건", "예외 조항"],
+      "open_edges": [],
+      "tool_intents": [],
+      "tool_observations": []
+    },
+    {
+      "id": "I1",
+      "parent_id": "I0",
+      "depth": 1,
+      "owner_agent": "librarian",
+      "status": "waiting_for_tool",
+      "irac": {
+        "issue": "방화구획 면적 기준의 현행 rule source는 무엇인가?",
+        "rule": "1차 source를 우선 검색합니다.",
+        "application": "법제처 현행 법령 원문과 관련 규칙 후보가 필요합니다.",
+        "conclusion": "web_search 또는 법령 API 도구 intent가 필요합니다."
+      },
+      "confidence": 0.4,
+      "evidence": [],
+      "unknowns": ["법령명", "조문 번호", "시행일"],
+      "open_edges": [],
+      "tool_intents": ["intent-001"],
+      "tool_observations": []
+    }
+  ],
+  "edges": [
+    {
+      "from": "I0",
+      "to": "I1",
+      "type": "HAS_CHILD",
+      "reason": "현행 rule source 확인을 별도 node로 분리합니다."
+    }
+  ],
+  "shared_entries": [
+    {
+      "id": "entry-001",
+      "kind": "root_issue",
+      "node_id": "I0",
+      "text": "방화구획의 면적기준은 얼마마다 해줘야 하는지",
+      "confidence": 0.8
+    }
+  ],
+  "source_candidates": [
+    {
+      "title": "법제처 국가법령정보센터 현행 법령 원문",
+      "kind": "primary_source",
+      "reason": "법령 질문의 1차 source입니다."
+    }
+  ],
+  "unknowns": ["현행 조문", "건축물 조건", "예외 조항"],
+  "agent_roster": [
+    {
+      "agent_id": "mayor",
+      "role": "Mayor",
+      "role_file": "agents/roles/mayor.md"
+    },
+    {
+      "agent_id": "librarian",
+      "role": "Librarian",
+      "role_file": "agents/roles/librarian.md"
+    }
+  ],
+  "agent_assignments": [
+    {
+      "node_id": "I0",
+      "primary_agent": "mayor",
+      "supporting_agents": ["planner", "chronicler"],
+      "reason": "루트 질문 정식화와 dispatch"
+    },
+    {
+      "node_id": "I1",
+      "primary_agent": "librarian",
+      "supporting_agents": ["source_learner"],
+      "reason": "Rule source 후보와 검증 경로"
+    }
+  ],
+  "handoffs": [
+    {
+      "from_agent": "mayor",
+      "to_agent": "librarian",
+      "node_id": "I1",
+      "handoff_type": "has_child",
+      "payload": "현행 법령 source를 확인합니다."
+    }
+  ],
+  "agent_events": [],
+  "tool_intents": [
+    {
+      "id": "intent-001",
+      "node_id": "I1",
+      "agent_id": "librarian",
+      "tool_name": "web_search",
+      "tool_group": "web",
+      "risk": "low",
+      "purpose": "방화구획 면적 기준의 현행 법령 원문 후보를 찾습니다.",
+      "expected_output": "법령명, 조문 번호, 시행일, URL",
+      "preflight": "검색 질의가 개인 정보나 민감 정보를 포함하지 않습니다.",
+      "approval_status": "not_required",
+      "provenance_policy": "URL, retrieved_at, snippet을 observation에 저장합니다.",
+      "fallback": "사용자에게 법령 source를 요청합니다."
+    }
+  ],
+  "tool_observations": [],
+  "memory_candidates": []
+}
+

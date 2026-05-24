@@ -1,0 +1,50 @@
+version: 0.1.0
+graph:
+  node_type: IRACNode
+  root_node_id: I0
+  default_flow:
+    - issue
+    - rule
+    - application
+    - cross_link
+    - conclusion
+    - refinery_review
+    - persist
+  recursion:
+    max_depth_default: 2
+    max_children_per_node_default: 6
+    stop_conditions:
+      - max_depth_reached
+      - missing_rule_source
+      - missing_user_condition
+      - budget_exceeded
+      - safety_boundary
+      - sufficient_answer_ready
+  edge_types:
+    - HAS_CHILD
+    - REQUIRES_RULE
+    - APPLIES_RULE
+    - SUPPORTS
+    - CONTRADICTS
+    - BLOCKS
+    - REUSES
+    - ANALOGIZES
+    - SHARES_CONDITION
+    - PRODUCES_TOOL_INTENT
+    - OBSERVED_BY_TOOL
+    - PROMOTES_MEMORY_CANDIDATE
+  answer_states:
+    - known
+    - inferred
+    - uncertain
+    - unknown
+    - out_of_scope
+  node_statuses:
+    - draft
+    - waiting_for_tool
+    - waiting_for_source
+    - waiting_for_user
+    - reviewed
+    - rejected
+    - completed
+

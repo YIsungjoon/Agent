@@ -1,0 +1,112 @@
+version: 0.1.0
+contracts:
+  - name: web_search
+    group: web
+    risk: low
+    intent_schema:
+      required:
+        - query
+        - purpose
+        - freshness_requirement
+    observation_schema:
+      required:
+        - title
+        - url
+        - retrieved_at
+        - snippet
+        - source_type
+        - confidence
+
+  - name: web_fetch
+    group: web
+    risk: low
+    intent_schema:
+      required:
+        - url
+        - purpose
+    observation_schema:
+      required:
+        - url
+        - retrieved_at
+        - extracted_text_ref
+        - status
+
+  - name: document_extract
+    group: document
+    risk: low
+    intent_schema:
+      required:
+        - file
+        - unit_range
+        - purpose
+    observation_schema:
+      required:
+        - file
+        - units
+        - text_ref
+        - media_refs
+        - extraction_warnings
+
+  - name: graph_query
+    group: memory
+    risk: low
+    intent_schema:
+      required:
+        - query
+        - node_or_edge_types
+        - purpose
+    observation_schema:
+      required:
+        - matched_nodes
+        - matched_edges
+        - confidence
+        - provenance
+
+  - name: graph_upsert
+    group: memory
+    risk: medium
+    intent_schema:
+      required:
+        - memory_candidate_ids
+        - purpose
+        - verification_status
+    observation_schema:
+      required:
+        - upserted_nodes
+        - upserted_edges
+        - skipped_items
+        - provenance
+
+  - name: screen_observe
+    group: vision
+    risk: high
+    intent_schema:
+      required:
+        - target_window_or_region
+        - purpose
+        - approval_status
+    observation_schema:
+      required:
+        - screenshot_ref
+        - redaction_status
+        - visible_state
+        - ui_elements
+        - uncertainties
+
+  - name: desktop_action
+    group: desktop
+    risk: high
+    intent_schema:
+      required:
+        - action_type
+        - target
+        - pre_observation_ref
+        - approval_status
+        - expected_result
+    observation_schema:
+      required:
+        - action_trace
+        - post_observation_ref
+        - success_state
+        - rollback_or_recovery
+

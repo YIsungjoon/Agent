@@ -1,0 +1,125 @@
+version: 0.1.0
+agents:
+  - id: mayor
+    role: Mayor
+    role_file: agents/roles/mayor.md
+    primary_for:
+      - root_issue
+      - dispatch
+      - final_user_answer
+    allowed_tool_groups:
+      - memory
+      - eval
+    requires_handoff_for:
+      - web
+      - document
+      - desktop
+      - vision
+
+  - id: planner
+    role: Planner
+    role_file: agents/roles/planner.md
+    primary_for:
+      - decomposition
+      - dependencies
+      - recursion_budget
+    allowed_tool_groups:
+      - memory
+      - eval
+
+  - id: librarian
+    role: Librarian
+    role_file: agents/roles/librarian.md
+    primary_for:
+      - rule_source
+      - citation
+      - compiled_knowledge
+    allowed_tool_groups:
+      - fs
+      - web
+      - document
+      - memory
+
+  - id: source_learner
+    role: Source Learner
+    role_file: agents/roles/source_learner.md
+    primary_for:
+      - claim_extraction
+      - verification_path
+      - provenance
+    allowed_tool_groups:
+      - web
+      - document
+      - memory
+
+  - id: worker
+    role: Worker
+    role_file: agents/roles/worker.md
+    primary_for:
+      - application
+      - bounded_execution
+      - condition_analysis
+    allowed_tool_groups:
+      - fs
+      - runtime
+      - memory
+      - document
+
+  - id: schema_cartographer
+    role: Schema Cartographer
+    role_file: agents/roles/schema_cartographer.md
+    primary_for:
+      - cross_link
+      - edge_type
+      - analogy_boundary
+    allowed_tool_groups:
+      - memory
+      - eval
+
+  - id: refinery
+    role: Refinery
+    role_file: agents/roles/refinery.md
+    primary_for:
+      - evidence_review
+      - blocker_detection
+      - final_draft_review
+    allowed_tool_groups:
+      - fs
+      - memory
+      - eval
+
+  - id: chronicler
+    role: Chronicler
+    role_file: agents/roles/chronicler.md
+    primary_for:
+      - trace_summary
+      - memory_candidate
+      - continuity
+    allowed_tool_groups:
+      - fs
+      - memory
+
+default_node_assignment:
+  I0:
+    primary_agent: mayor
+    supporting_agents:
+      - planner
+      - chronicler
+  I1:
+    primary_agent: librarian
+    supporting_agents:
+      - source_learner
+  I2:
+    primary_agent: worker
+    supporting_agents:
+      - planner
+  I3:
+    primary_agent: schema_cartographer
+    supporting_agents:
+      - refinery
+  I4:
+    primary_agent: refinery
+    supporting_agents:
+      - chronicler
+      - mayor
+

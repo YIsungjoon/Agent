@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fractal-irac-workspace.schema.json",
+  "title": "Fractal IRAC Workspace",
+  "type": "object",
+  "required": ["run_id", "created_at", "question", "nodes", "edges", "shared_entries", "status"],
+  "properties": {
+    "run_id": { "type": "string" },
+    "created_at": { "type": "string" },
+    "question": { "type": "string" },
+    "max_depth": { "type": "integer", "minimum": 0 },
+    "status": { "type": "string" },
+    "answer_draft": { "type": "string" },
+    "used_langgraph": { "type": "boolean" },
+    "model_note": { "type": "string" },
+    "nodes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/irac_node" }
+    },
+    "edges": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/edge" }
+    },
+    "shared_entries": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/shared_entry" }
+    },
+    "source_candidates": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "unknowns": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "agent_roster": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "agent_assignments": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "handoffs": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "agent_events": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "tool_intents": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/tool_intent" }
+    },
+    "tool_observations": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/tool_observation" }
+    },
+    "memory_candidates": {
+      "type": "array",
+      "items": { "type": "object" }
+    }
+  },
+  "$defs": {
+    "irac_node": {
+      "type": "object",
+      "required": ["id", "depth", "irac"],
+      "properties": {
+        "id": { "type": "string" },
+        "parent_id": { "type": "string" },
+        "depth": { "type": "integer" },
+        "agent_type": { "type": "string" },
+        "owner_agent": { "type": "string" },
+        "status": { "type": "string" },
+        "irac": {
+          "type": "object",
+          "required": ["issue", "rule", "application", "conclusion"],
+          "properties": {
+            "issue": { "type": "string" },
+            "rule": { "type": "string" },
+            "application": { "type": "string" },
+            "conclusion": { "type": "string" }
+          }
+        },
+        "confidence": { "type": "number" },
+        "evidence": { "type": "array", "items": { "type": "string" } },
+        "unknowns": { "type": "array", "items": { "type": "string" } },
+        "open_edges": { "type": "array", "items": { "type": "object" } },
+        "tool_intents": { "type": "array", "items": { "type": "string" } },
+        "tool_observations": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "edge": {
+      "type": "object",
+      "required": ["from", "to", "type"],
+      "properties": {
+        "from": { "type": "string" },
+        "to": { "type": "string" },
+        "type": { "type": "string" },
+        "reason": { "type": "string" }
+      }
+    },
+    "shared_entry": {
+      "type": "object",
+      "required": ["id", "kind", "text"],
+      "properties": {
+        "id": { "type": "string" },
+        "kind": { "type": "string" },
+        "node_id": { "type": "string" },
+        "text": { "type": "string" },
+        "confidence": { "type": "number" }
+      }
+    },
+    "tool_intent": {
+      "type": "object",
+      "required": ["id", "node_id", "agent_id", "tool_name", "purpose", "risk"],
+      "properties": {
+        "id": { "type": "string" },
+        "node_id": { "type": "string" },
+        "agent_id": { "type": "string" },
+        "tool_name": { "type": "string" },
+        "tool_group": { "type": "string" },
+        "risk": { "type": "string" },
+        "purpose": { "type": "string" },
+        "expected_output": { "type": "string" },
+        "preflight": { "type": "string" },
+        "approval_status": { "type": "string" },
+        "provenance_policy": { "type": "string" },
+        "fallback": { "type": "string" }
+      }
+    },
+    "tool_observation": {
+      "type": "object",
+      "required": ["id", "intent_id", "node_id", "observation_type", "provenance"],
+      "properties": {
+        "id": { "type": "string" },
+        "intent_id": { "type": "string" },
+        "node_id": { "type": "string" },
+        "observation_type": { "type": "string" },
+        "provenance": { "type": "object" },
+        "confidence": { "type": "number" },
+        "content": { "type": "string" },
+        "extracted_claims": { "type": "array", "items": { "type": "object" } }
+      }
+    }
+  }
+}
+

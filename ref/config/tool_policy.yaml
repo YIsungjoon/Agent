@@ -1,0 +1,55 @@
+version: 0.1.0
+principles:
+  - 도구 사용 전 목적과 기대 산출물을 기록합니다.
+  - 도구 결과와 agent 해석을 구분합니다.
+  - 도구 결과는 provenance 없이 shared knowledge로 승격하지 않습니다.
+  - high risk tool은 preflight와 approval 상태를 workspace에 남깁니다.
+  - desktop/vision 도구는 실제 행동 전 화면 재관찰과 target 확인이 필요합니다.
+risk_levels:
+  low:
+    required_fields:
+      - purpose
+      - expected_output
+      - provenance_policy
+    approval_required: false
+  medium:
+    required_fields:
+      - purpose
+      - expected_output
+      - preflight
+      - rollback_or_fallback
+      - provenance_policy
+    approval_required: false
+  high:
+    required_fields:
+      - purpose
+      - expected_output
+      - preflight
+      - explicit_target
+      - approval_status
+      - rollback_or_fallback
+      - provenance_policy
+    approval_required: true
+tool_group_policy:
+  fs:
+    default_risk: low
+    notes: workspace 내부 읽기/검색은 low, 쓰기는 medium입니다.
+  web:
+    default_risk: low
+    notes: 최신성 검증이 필요한 source retrieval에 사용합니다.
+  document:
+    default_risk: low
+    notes: 책, PDF, EPUB, 문서 학습에 사용합니다.
+  memory:
+    default_risk: medium
+    notes: 조회는 low, graph upsert/link는 medium입니다.
+  runtime:
+    default_risk: medium
+    notes: 제한된 command 실행만 허용합니다.
+  vision:
+    default_risk: high
+    notes: 화면에는 민감 정보가 있을 수 있으므로 redaction과 승인 상태를 기록합니다.
+  desktop:
+    default_risk: high
+    notes: 실제 프로그램 조작은 preflight, target, approval 기록이 필요합니다.
+

@@ -1,0 +1,38 @@
+id: fractal_irac_system
+version: 0.1.0
+language: ko
+purpose: IRAC 프랙탈 구조를 multiagent와 tool-use까지 고려한 독립 subsystem으로 정의합니다.
+runtime_outputs:
+  - memory/fractal_irac/runs/<run-id>/workspace.json
+  - memory/fractal_irac/runs/<run-id>/workspace.md
+entrypoints:
+  cli: scripts/aal.py fractal
+  docs:
+    - docs/FRACTAL_IRAC_AGENT.md
+    - docs/MULTIAGENT_FRACTAL_IRAC.md
+required_files:
+  - README.md
+  - architecture/OVERVIEW.md
+  - architecture/RUN_LIFECYCLE.md
+  - config/agents.yaml
+  - config/graph.yaml
+  - config/tool_policy.yaml
+  - prompts/root_agent.md
+  - prompts/subagent.md
+  - prompts/tool_use.md
+  - prompts/refinery.md
+  - schemas/workspace.schema.json
+  - tools/contracts.yaml
+  - tools/README.md
+  - runbooks/tool_enabled_irac_run.md
+  - examples/fire_compartment/workspace.seed.json
+  - examples/fire_compartment/README.md
+  - runtime/runs/README.md
+  - validate_structure.py
+design_constraints:
+  - 모든 기본 문서는 한국어로 작성합니다.
+  - source, observation, inference, conclusion을 구분합니다.
+  - 도구 결과는 반드시 provenance를 가집니다.
+  - 고위험 도구는 preflight와 approval 상태를 기록합니다.
+  - 최종 답변은 unknown과 blocker를 숨기지 않습니다.
+

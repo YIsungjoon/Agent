@@ -1,0 +1,17 @@
+# OS/editor noise
+.DS_Store
+*.swp
+
+# Python cache
+__pycache__/
+*.pyc
+.pycache/
+
+# Runtime outputs
+runtime/runs/**
+!runtime/runs/
+!runtime/runs/README.md
+
+# Local secrets or machine-specific config
+.env
+*.local
