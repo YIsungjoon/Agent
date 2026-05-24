@@ -75,6 +75,7 @@ agents:
     allowed_tool_groups:
       - memory
       - eval
+      - runtime
 
   - id: refinery
     role: Refinery

@@ -1,8 +1,15 @@
 import os
+import sys
 import yaml
 from typing import Tuple, Dict, Any
 from pathlib import Path
 from fractal_system.models import ToolIntent
+
+# Add Agent_tools path dynamically
+sys.path.append(str(Path("/home/leehm/linux_project/Agent_tools").resolve()))
+
+from document_parser import parse_document
+from data_orchestrator import preprocess_and_clean_data, rdb_store_and_query, gdb_store_and_query
 
 # Path to the reference configuration
 REF_DIR = Path("/home/leehm/linux_project/Agent/ref")
@@ -120,19 +127,20 @@ def execute_multiply(a: int, b: int) -> int:
 def dispatch_tool(name: str, args: Dict[str, Any]) -> str:
     """Executes the tool by name and parses its arguments, returning the result string."""
     name_clean = name.strip().lower()
+    args_dict = args if isinstance(args, dict) else {}
     try:
         if "search" in name_clean or "web" in name_clean:
-            query = args.get("query", args.get("q", ""))
+            query = args_dict.get("query", args_dict.get("q", ""))
             return execute_web_search(str(query))
         elif "multiply" in name_clean or "calc" in name_clean or "runtime" in name_clean or "math" in name_clean:
             # First, check direct 'a' and 'b'
-            a = args.get("a")
-            b = args.get("b")
+            a = args_dict.get("a")
+            b = args_dict.get("b")
             
             # If not direct, look in query or other keys
             if a is None or b is None:
                 all_vals = []
-                for val in args.values():
+                for val in args_dict.values():
                     if isinstance(val, (int, float)):
                         all_vals.append(int(val))
                     elif isinstance(val, str):
@@ -145,6 +153,14 @@ def dispatch_tool(name: str, args: Dict[str, Any]) -> str:
                     a, b = 14, 25  # Fallback to the user's specific request
                     
             return f"Result: {execute_multiply(int(a), int(b))}"
+        elif "document" in name_clean or "parse" in name_clean:
+            return parse_document.invoke(args_dict)
+        elif "preprocess" in name_clean or "clean" in name_clean:
+            return preprocess_and_clean_data.invoke(args_dict)
+        elif "rdb" in name_clean or "sqlite" in name_clean:
+            return rdb_store_and_query.invoke(args_dict)
+        elif "gdb" in name_clean or "graph" in name_clean:
+            return gdb_store_and_query.invoke(args_dict)
         else:
             return f"Unknown tool '{name}'. In a real-world setting, this would execute the physical actuator."
     except Exception as e:
