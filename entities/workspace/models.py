@@ -49,7 +49,6 @@ class IRACNode(BaseModel):
 class Edge(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     
-    # 'from' is a reserved keyword in Python, so we alias it
     from_node: str = Field(..., alias="from")
     to: str
     type: str

@@ -4,15 +4,14 @@ import yaml
 from typing import Tuple, Dict, Any
 from pathlib import Path
 from dotenv import load_dotenv
-from fractal_system.models import ToolIntent
 
-# Load environment variables
+# Ensure environment variables are loaded
 load_dotenv()  # Load from Agent/.env
 agent_tools_env = Path("/home/leehm/linux_project/Agent_tools/.env")
 if agent_tools_env.exists():
     load_dotenv(dotenv_path=agent_tools_env)
 
-# Add Agent_tools path dynamically
+# Dynamically append Agent_tools path
 sys.path.append(str(Path("/home/leehm/linux_project/Agent_tools").resolve()))
 
 from document_parser import parse_document
@@ -20,8 +19,9 @@ from data_orchestrator import preprocess_and_clean_data, rdb_store_and_query, gd
 from legal_search import legal_search
 from construction_standards import kcsc_search
 
+from entities.workspace.models import ToolIntent
 
-# Path to the reference configuration
+# Path to reference configuration
 REF_DIR = Path("/home/leehm/linux_project/Agent/ref")
 TOOL_POLICY_PATH = REF_DIR / "config" / "tool_policy.yaml"
 
@@ -64,10 +64,8 @@ class ToolRegistry:
         }
         
         for field in required_fields:
-            # Special check for high-risk field 'explicit_target' which we can map to intent.purpose or handle
             val = attr_mapping.get(field)
             if field == "explicit_target":
-                # We expect a target (e.g. greenhouse ID or folder) in purpose or preflight
                 if not intent.purpose:
                     return False, f"Missing required field for high risk: {field} (must specify target in purpose)"
                 continue
@@ -147,11 +145,9 @@ def dispatch_tool(name: str, args: Dict[str, Any]) -> str:
             query = args_dict.get("query", args_dict.get("q", ""))
             return execute_web_search(str(query))
         elif "multiply" in name_clean or "calc" in name_clean or "runtime" in name_clean or "math" in name_clean:
-            # First, check direct 'a' and 'b'
             a = args_dict.get("a")
             b = args_dict.get("b")
             
-            # If not direct, look in query or other keys
             if a is None or b is None:
                 all_vals = []
                 for val in args_dict.values():
@@ -164,7 +160,7 @@ def dispatch_tool(name: str, args: Dict[str, Any]) -> str:
                 if len(all_vals) >= 2:
                     a, b = all_vals[0], all_vals[1]
                 else:
-                    a, b = 14, 25  # Fallback to the user's specific request
+                    a, b = 14, 25
                     
             return f"Result: {execute_multiply(int(a), int(b))}"
         elif "document" in name_clean or "parse" in name_clean:

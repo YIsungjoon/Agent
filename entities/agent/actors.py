@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Dict, Any, List, Optional
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import SystemMessage, HumanMessage
-from fractal_system.logger import logger, log_header
+from shared.logger import logger, log_header
 
 REF_DIR = Path("/home/leehm/linux_project/Agent/ref")
 PROMPTS_DIR = REF_DIR / "prompts"
@@ -19,7 +19,6 @@ class AgentRunner:
     @property
     def llm(self):
         if self._llm is None:
-            # Try to get the API key. Fall back to a dummy key only for import checks so it doesn't crash Pydantic validation
             api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY") or "DUMMY_IMPORT_KEY"
             self._llm = ChatGoogleGenerativeAI(
                 model="gemini-2.5-flash",
@@ -45,13 +44,11 @@ class AgentRunner:
 
     def _extract_yaml(self, text: str) -> Dict[str, Any]:
         """Cleans and extracts YAML content from LLM markdown code blocks."""
-        # Find yaml or markdown codeblocks
         pattern = r"```(?:yaml)?\n(.*?)\n```"
         match = re.search(pattern, text, re.DOTALL | re.IGNORECASE)
         if match:
             yaml_str = match.group(1)
         else:
-            # If no code blocks, try to find lines that look like YAML or parse entire text
             yaml_str = text
             
         try:
@@ -62,7 +59,6 @@ class AgentRunner:
             return {}
         except Exception as e:
             logger.error(f"Failed to parse YAML string. Text: {yaml_str}\nError: {e}")
-            # Fallback regex parsing or return empty
             return {}
 
     def run_mayor_root(self, question: str) -> Dict[str, Any]:
@@ -86,7 +82,6 @@ class AgentRunner:
         result = self._extract_yaml(response.content)
         logger.info(f"Root Agent Extracted YAML: {result}")
         
-        # Ensure ID is I0
         if "root_node" in result:
             result["root_node"]["id"] = "I0"
             return result["root_node"]
@@ -100,7 +95,6 @@ class AgentRunner:
         log_header("Planner Decomposition of Root Node")
         logger.info("Planner analysis of workspace initiated.")
         
-        # Dynamic description of roles from agents.yaml
         roles_desc = "\n".join([
             f"- {a['role']} ({a['id']}): Responsible for {', '.join(a.get('primary_for', []))}. Tools: {', '.join(a.get('allowed_tool_groups', []))}"
             for a in self.agent_roster
@@ -186,7 +180,6 @@ decomposition:
         
         system_prompt = self._load_prompt("subagent.md")
         
-        # Find agent details
         agent_info = next((a for a in self.agent_roster if a["id"] == agent_id), {"role": "Worker", "primary_for": ["general"]})
         role_instruction = f"역할: {agent_info['role']}. 주 업무: {', '.join(agent_info.get('primary_for', []))}. 허용 도구: {', '.join(agent_info.get('allowed_tool_groups', []))}"
         
@@ -315,5 +308,4 @@ synthesis:
         
         return response.content
 
-# Create a singleton runner
 agent_runner = AgentRunner()
