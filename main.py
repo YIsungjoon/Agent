@@ -1,9 +1,15 @@
 import os
 import sys
+from pathlib import Path
 from dotenv import load_dotenv
 
 # Load environment variables
-load_dotenv()
+load_dotenv()  # Load from Agent/.env
+
+# Also load from Agent_tools/.env if it exists
+agent_tools_env = Path("/home/leehm/linux_project/Agent_tools/.env")
+if agent_tools_env.exists():
+    load_dotenv(dotenv_path=agent_tools_env)
 
 # Verify API keys
 if not (os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")):

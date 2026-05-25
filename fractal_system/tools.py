@@ -3,7 +3,14 @@ import sys
 import yaml
 from typing import Tuple, Dict, Any
 from pathlib import Path
+from dotenv import load_dotenv
 from fractal_system.models import ToolIntent
+
+# Load environment variables
+load_dotenv()  # Load from Agent/.env
+agent_tools_env = Path("/home/leehm/linux_project/Agent_tools/.env")
+if agent_tools_env.exists():
+    load_dotenv(dotenv_path=agent_tools_env)
 
 # Add Agent_tools path dynamically
 sys.path.append(str(Path("/home/leehm/linux_project/Agent_tools").resolve()))
